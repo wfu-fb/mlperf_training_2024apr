@@ -1,0 +1,167 @@
+W0416 18:34:05.379000 140124049764864 torch/distributed/run.py:757] 
+W0416 18:34:05.379000 140124049764864 torch/distributed/run.py:757] *****************************************
+W0416 18:34:05.379000 140124049764864 torch/distributed/run.py:757] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W0416 18:34:05.379000 140124049764864 torch/distributed/run.py:757] *****************************************
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+Traceback (most recent call last):
+      File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py", line 615, in <module>
+    sys.exit(recipe_main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/config/_parse.py", line 47, in wrapper
+    yaml_args, cli_args = parser.parse_known_args()
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/utils/argparse.py", line 52, in parse_known_args
+    config = OmegaConf.load(namespace.config)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/omegaconf/omegaconf.py", line 189, in load
+    with io.open(os.path.abspath(file_), "r", encoding="utf-8") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/hiwotkassa/torchtune/recipes/recipes/configs/llama2/70B_lora.yaml'
+E0416 18:34:10.491000 140124049764864 torch/distributed/elastic/multiprocessing/api.py:826] failed (exitcode: 1) local_rank: 0 (pid: 3486790) of binary: /home/hiwotkassa/infra_mlperf_llama_conda/conda/bin/python
+Running with torchrun...
+Traceback (most recent call last):
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/bin/tune", line 8, in <module>
+    sys.exit(main())
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/_cli/tune.py", line 49, in main
+    parser.run(args)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/_cli/tune.py", line 43, in run
+    args.func(args)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/_cli/run.py", line 177, in _run_cmd
+    self._run_distributed(args)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torchtune/_cli/run.py", line 88, in _run_distributed
+    run(args)
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torch/distributed/run.py", line 870, in run
+    elastic_launch(
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 132, in __call__
+    return launch_agent(self._config, self._entrypoint, list(args))
+  File "/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/torch/distributed/launcher/api.py", line 263, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+/home/hiwotkassa/infra_mlperf_llama_conda/conda/lib/python3.10/site-packages/recipes/lora_finetune_distributed.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 3486791)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 3486792)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 3486793)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[4]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 4 (local_rank: 4)
+  exitcode  : 1 (pid: 3486794)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[5]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 5 (local_rank: 5)
+  exitcode  : 1 (pid: 3486795)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[6]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 6 (local_rank: 6)
+  exitcode  : 1 (pid: 3486796)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[7]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 7 (local_rank: 7)
+  exitcode  : 1 (pid: 3486797)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2024-04-16_18:34:10
+  host      : devgpu009.prn6.facebook.com
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 3486790)
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

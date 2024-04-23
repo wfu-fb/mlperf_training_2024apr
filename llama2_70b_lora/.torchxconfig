@@ -1,0 +1,27 @@
+[mast_conda]
+conda_fbpkg_id = infra_mlperf_llama_conda
+conda_path_in_fbpkg = conda
+activate_conda = False
+fbpkg_ids = fb-py-spy:prod
+#hpcIdentity = ai_system_sw_hw_co-design_fte
+hpcIdentity = genai_llm_research-llama
+rmAttribution = codesign
+# rmAttribution = codesign_dc_scale
+workspace_fbpkg_name = infra_mlperf_llama
+conda_pack_ignore_missing_files = True
+git = False
+hpcJobOncall = meta_conda
+modelTypeName = gen_ai_conda
+hpcClusterUuid = MastProdCluster
+# localityConstraints = region;ftw
+
+
+[component:mast.py:train]
+name = mlperf_llama
+# h = bbv
+#h = tc_any
+h = t16_grandteton
+run_as_root = True
+
+[cli:run]
+scheduler = mast_conda

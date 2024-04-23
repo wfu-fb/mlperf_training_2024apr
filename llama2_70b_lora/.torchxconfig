@@ -19,8 +19,8 @@ hpcClusterUuid = MastProdCluster
 [component:mast.py:train]
 name = mlperf_llama
 # h = bbv
-#h = tc_any
-h = t16_grandteton
+h = tc_any
+#h = t16_grandteton
 run_as_root = True
 
 [cli:run]

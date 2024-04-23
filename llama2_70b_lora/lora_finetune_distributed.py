@@ -4,6 +4,7 @@
 # This source code is licensed under the BSD-style license found in the
 # LICENSE file in the root directory of this source tree.
 
+import os
 import sys
 import time
 
@@ -32,7 +33,7 @@ from torchtune.modules.peft.peft_utils import (
     validate_state_dict_for_lora,
 )
 from torchtune.recipe_interfaces import FTRecipeInterface
-
+from dataset import instruct_dataset
 from tqdm import tqdm
 
 log = utils.get_logger("DEBUG")
@@ -295,7 +296,7 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
             validate_state_dict_for_lora(
                 lora_attn_modules=cfg_model.lora_attn_modules,
                 apply_lora_to_mlp=cfg_model.apply_lora_to_mlp,
-                apply_lora_to_output=cfg_model.apply_lora_to_output,
+                apply_lora_to_output=getattr(cfg_model, "apply_lora_to_output", False),
                 full_model_state_dict_keys=model.state_dict().keys(),
                 lora_state_dict_keys=(
                     lora_weights_state_dict.keys()
@@ -356,8 +357,8 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                 model, auto_wrap_policy={modules.TransformerDecoderLayer}
             )
         if self._is_rank_zero:
-            memory_stats = utils.memory_stats_log(device=self._device)
-            log.info(f"Memory Stats after model init:\n{memory_stats}")
+            memory_stats = utils.get_memory_stats(device=self._device)
+            utils.log_memory_stats(memory_stats)
 
         # synchronize before training begins
         torch.distributed.barrier()
@@ -531,7 +532,6 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                     break
 
                 input_ids, labels = batch
-                #print(input_ids.size(),labels.size())
                 input_ids = input_ids.to(self._device)
                 labels = labels.to(self._device)
 
@@ -573,17 +573,19 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                     and self._is_rank_zero
                 ):
                     # Log peak memory for iteration
-                    memory_stats = utils.memory_stats_log(device=self._device)
+                    memory_stats = utils.get_memory_stats(device=self._device)
                     self._metric_logger.log_dict(
                         memory_stats, step=self.total_training_steps
                     )
 
-            self.evaluate()
             self.epochs_run += 1
             self.save_checkpoint(epoch=curr_epoch)
 
-    def evaluate(self) -> None:
-        return
+    def cleanup(self) -> None:
+        if self._is_rank_zero:
+            self._metric_logger.close()
+        destroy_process_group()
+
 
 @config.parse
 def recipe_main(cfg: DictConfig) -> None:
@@ -599,7 +601,7 @@ def recipe_main(cfg: DictConfig) -> None:
             "Distributed finetune recipe should be run via a distributed launcher."
             "If using tune CLI, please specify --nnodes 1 and --nproc_per_node [num_gpus]"
         )
-
+    os.environ["TORCH_NCCL_AVOID_RECORD_STREAMS"] = "1"
     init_process_group(backend="gloo" if cfg.device == "cpu" else "nccl")
 
     config.log_config(recipe_name="LoRAFinetuneRecipeDistributed", cfg=cfg)

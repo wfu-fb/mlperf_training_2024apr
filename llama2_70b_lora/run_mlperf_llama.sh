@@ -39,7 +39,7 @@ cd /packages/infra_mlperf_llama
 
 #sleep 1h 
 
-tune run lora_finetune_distributed.py --config recipes/configs/llama2/70B_lora.yaml
+python lora_finetune_distributed.py --config recipes/configs/llama2/70B_lora.yaml
 
 #TORCH_DISABLE_ADDR2LINE=1  \
 #python train.py  \

@@ -37,7 +37,7 @@ _STORAGE_PACKAGES = {
 _MOUNT_SCRIPT = "$WORKSPACE_DIR/mount.sh"
 _PY_SPY_SCRIPT = "py_spy_startup.sh"
 _TEE_SCRIPT = "torchx_tee.sh"
-_RUN_SCRIPT = "$WORKSPACE_DIR/run_mlperf_llama.sh"
+_RUN_SCRIPT = "run_mlperf_llama.sh"
 
 
 def train(

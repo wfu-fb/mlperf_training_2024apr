@@ -21,7 +21,7 @@
 # Model Arguments
 model:
   _component_: torchtune.models.llama2.lora_llama2_70b
-  lora_attn_modules: ['q_proj', 'v_proj', 'o_proj','k_proj']
+  lora_attn_modules: ['q_proj', 'v_proj','k_proj','output_proj']
     #lora_attn_modules: ['qkv_proj', 'o_proj']
   apply_lora_to_mlp: False
   apply_lora_to_output: False
@@ -85,7 +85,7 @@ dataset:
   max_seq_len: 8192
 seed: null
 shuffle: True
-batch_size: 2
+batch_size: 1
 
 # Optimizer and Scheduler
 optimizer:
@@ -101,7 +101,9 @@ loss:
 
 # Training
 epochs: 1
-max_steps_per_epoch: null
+max_steps_per_epoch: 1024
+  #eval_steps: 48
+  #target_eval_loss: 0.925
 gradient_accumulation_steps: 1
 
 # Logging

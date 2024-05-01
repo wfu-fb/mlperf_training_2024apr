@@ -16,7 +16,7 @@ import torch
 from omegaconf import DictConfig
 
 from torch import nn
-from torch.distributed import destroy_process_group, init_process_group
+import torch.distributed as dist #destroy_process_group, init_process_group
 from torch.distributed.fsdp import (
     FullOptimStateDictConfig,
     FullStateDictConfig,
@@ -35,6 +35,7 @@ from torchtune.modules.peft.peft_utils import (
 from torchtune.recipe_interfaces import FTRecipeInterface
 from dataset import instruct_dataset
 from tqdm import tqdm
+from mlperf_logging_utils import LoraLogger, MLPerfLogger
 
 log = utils.get_logger("DEBUG")
 
@@ -130,8 +131,11 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
         self.seed = utils.set_seed(seed=cfg.seed)
         self.epochs_run = 0
         self.total_epochs = cfg.epochs
-        self.max_steps_per_epoch = cfg.max_steps_per_epoch
+        self.max_steps_per_epoch = 1024 #cfg.max_steps_per_epoch
         self.total_training_steps = 0
+        self.eval_steps = 48
+        self.logging_steps = 24
+        self.target_eval_loss = 0.925
 
         self._resume_from_checkpoint = cfg.resume_from_checkpoint
         self._gradient_accumulation_steps = cfg.gradient_accumulation_steps
@@ -213,7 +217,8 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                 else None
             ),
         )
-        self._tokenizer = config.instantiate(cfg.tokenizer)
+        print(self._model)
+        self._tokenizer = "" #config.instantiate(cfg.tokenizer)
 
         self._optimizer = self._setup_optimizer(
             cfg_optimizer=cfg.optimizer,
@@ -230,6 +235,14 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
             cfg_dataset=cfg.dataset,
             shuffle=cfg.shuffle,
             batch_size=cfg.batch_size,
+            dataset_type="train",
+        )
+
+        self._test_sampler, self._test_dataloader=self._setup_data(
+            cfg_dataset=cfg.dataset,
+            shuffle=cfg.shuffle,
+            batch_size=cfg.batch_size,
+            dataset_type="test",
         )
 
         # Finally update the recipe state which can only be correctly set after all of the
@@ -256,6 +269,9 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
             num_training_steps=self.total_epochs * self._steps_per_epoch,
             last_epoch=self.total_training_steps - 1,
         )
+        self.batch_size = cfg.batch_size
+        loralogger = LoraLogger(target_eval_loss=self.target_eval_loss)
+        self.logger = MLPerfLogger(loralogger, len(self._dataloader), len(self._dataloader))
 
     def _setup_model(
         self,
@@ -402,6 +418,7 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
         cfg_dataset: DictConfig,
         shuffle: bool,
         batch_size: int,
+        dataset_type: "train",
     ) -> Tuple[DistributedSampler, DataLoader]:
         """
         All data related setup happens here. Currently this recipe only supports the
@@ -409,7 +426,7 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
         iterable datasets and streaming datasets are not supported.
         """
         world_size, rank = utils.get_world_size_and_rank()
-        ds = config.instantiate(cfg_dataset, tokenizer=self._tokenizer)
+        ds = config.instantiate(cfg_dataset, tokenizer=self._tokenizer, dataset_type=dataset_type)
         sampler = DistributedSampler(
             ds, num_replicas=world_size, rank=rank, shuffle=shuffle, seed=0
         )
@@ -420,7 +437,7 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
             sampler=sampler,
             collate_fn=partial(
                 utils.padded_collate,
-                padding_idx=self._tokenizer.pad_id,
+            #    padding_idx=self._tokenizer,
                 ignore_idx=self._loss_fn.ignore_index,
             ),
         )
@@ -508,18 +525,24 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
         """
         # clean up before training begins
         utils.cleanup_before_training()
-
-        _, rank = utils.get_world_size_and_rank()
+        self.logger.train_begin(self.batch_size, self._gradient_accumulation_steps)
+        self.step=0
+        world_size, rank = utils.get_world_size_and_rank()
 
         # zero out the gradients before starting training
         self._optimizer.zero_grad()
+        self.total_epoch=self.max_steps_per_epoch/len(self._dataloader)
 
+        print("total epoch is",self.total_epoch)
+        print("total test is",len(self._test_dataloader))
         # self.epochs_run should be non-zero when we're resuming from a checkpoint
         for curr_epoch in range(self.epochs_run, self.total_epochs):
 
             # Update the sampler to ensure data is correctly shuffled across epochs
+            test_loss=torch.zeros(1).to(self._device)
             # in case shuffle is True
             self._sampler.set_epoch(curr_epoch)
+            self._stop_loss=False
 
             for idx, batch in enumerate(
                 pbar := tqdm(self._dataloader, disable=not (rank == 0))
@@ -527,7 +550,7 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                 if (
                     self.max_steps_per_epoch is not None
                     and (idx // self._gradient_accumulation_steps)
-                    == self.max_steps_per_epoch
+                    == self.max_steps_per_epoch or self._stop_loss==True
                 ):
                     break
 
@@ -560,6 +583,8 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                 loss = loss / self._gradient_accumulation_steps
                 loss.backward()
 
+                self._model.clip_grad_norm_(0.3)
+
                 if (idx + 1) % self._gradient_accumulation_steps == 0:
                     self._optimizer.step()
                     self._optimizer.zero_grad(set_to_none=True)
@@ -577,6 +602,34 @@ class LoRAFinetuneRecipeDistributed(FTRecipeInterface):
                     self._metric_logger.log_dict(
                         memory_stats, step=self.total_training_steps
                     )
+
+                if  self.total_training_steps % self.eval_steps == 0:
+                    self._model.eval()
+                    with torch.no_grad():
+                        for idx, batch in enumerate(
+                            test_pbar := tqdm(self._test_dataloader, disable=not (rank == 0))
+                        ):
+
+                            test_input_ids, test_labels = batch
+                            test_input_ids = test_input_ids.to(self._device)
+                            test_labels = test_labels.to(self._device)
+                            test_logits = self._model(test_input_ids)
+                            test_logits = test_logits[..., :-1, :].contiguous()
+                            test_labels = test_labels[..., 1:].contiguous()
+                            test_logits = test_logits.transpose(1, 2)
+                            current_loss=self._loss_fn(test_logits, test_labels)
+                            test_loss+= current_loss
+                            test_pbar.set_description(f"{curr_epoch+1}|{idx+1}|Loss: {current_loss}")
+                    dist.all_reduce(test_loss)
+                    test_loss=test_loss/(len(self._test_dataloader) * world_size *self.batch_size)
+                    if rank == 0:
+                        print("reduced test loss",test_loss)
+                    self._model.train()
+                    if test_loss.item()<=self.target_eval_loss:
+                        self._stop_loss=True
+                    self.step+=1
+                self.logger.on_step_begin(self.total_training_steps,self.logging_steps,self.eval_steps,loss,test_loss,self.max_steps_per_epoch)
+                        #break
 
             self.epochs_run += 1
             self.save_checkpoint(epoch=curr_epoch)
@@ -602,7 +655,7 @@ def recipe_main(cfg: DictConfig) -> None:
             "If using tune CLI, please specify --nnodes 1 and --nproc_per_node [num_gpus]"
         )
     os.environ["TORCH_NCCL_AVOID_RECORD_STREAMS"] = "1"
-    init_process_group(backend="gloo" if cfg.device == "cpu" else "nccl")
+    dist.init_process_group(backend="gloo" if cfg.device == "cpu" else "nccl")
 
     config.log_config(recipe_name="LoRAFinetuneRecipeDistributed", cfg=cfg)
 

@@ -57,7 +57,8 @@ class InstructDataset(Dataset):
 
     def __init__(
         self,
-        tokenizer: Tokenizer,
+        #tokenizer: Tokenizer,
+        dataset_type: str,
         #source: str,
         #template: InstructTemplate,
         #transform: Optional[Callable] = None,
@@ -66,7 +67,7 @@ class InstructDataset(Dataset):
         max_seq_len: Optional[int] = None,
         #**load_dataset_kwargs: Dict[str, Any],
     ) -> None:
-        self._tokenizer = tokenizer
+        #self._tokenizer = tokenizer
         #self._data = load_dataset(source, **load_dataset_kwargs)
         #dataset = load_dataset(
         #    "parquet",
@@ -79,13 +80,15 @@ class InstructDataset(Dataset):
             "parquet",
             data_files={
             #train": f"/mnt/wsfuse/data/gpt3/train-00000-of-00001.parquet",
-            train: f"train-00000-of-00001.parquet",
+            "train": f"train-00000-of-00001.parquet",
             #"validation": f"/mnt/wsfuse/data/gpt3/validation-00000-of-00001.parquet",
             "validation": f"validation-00000-of-00001.parquet",
         },
         )
-        self._data = dataset["train"]
-        self._eval_data=dataset["validation"]
+        if dataset_type =="train":
+            self._data = dataset["train"]
+        else:
+            self._data = dataset["validation"]
         #self.template = template
         #self._transform = transform
         #self._column_map = column_map
@@ -130,7 +133,8 @@ class InstructDataset(Dataset):
 
 
 def instruct_dataset(
-    tokenizer: Tokenizer,
+    #tokenizer: Tokenizer,
+    dataset_type: str,
     #source: str,
     #template: str,
     column_map: Optional[Dict[str, str]] = None,
@@ -161,7 +165,8 @@ def instruct_dataset(
         InstructDataset: the configured InstructDataset
     """
     return InstructDataset(
-        tokenizer=tokenizer,
+        #`tokenizer=tokenizer,
+        dataset_type=dataset_type,
         #source=source,
         #template=_get_instruct_template(template),
         #column_map=column_map,

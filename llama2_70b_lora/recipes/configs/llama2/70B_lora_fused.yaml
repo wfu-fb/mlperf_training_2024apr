@@ -21,8 +21,8 @@
 # Model Arguments
 model:
   _component_: torchtune.models.llama2.lora_llama2_70b
-  lora_attn_modules: ['q_proj', 'v_proj', 'o_proj','k_proj']
-    #lora_attn_modules: ['qkv_proj', 'o_proj']
+    #lora_attn_modules: ['q_proj', 'v_proj', 'o_proj','k_proj']
+  lora_attn_modules: ['qkv_proj', 'output_proj']
   apply_lora_to_mlp: False
   apply_lora_to_output: False
   lora_rank: 16
@@ -74,7 +74,7 @@ checkpointer:
   recipe_checkpoint: null
     #output_dir: /home/hiwotkassa/llama2_weight_70b
   output_dir: /tmp/llama2_weight_70b
-  model_type: LLAMA2
+  model_type: LLAMA2_FUSED
 resume_from_checkpoint: False
 
 # Dataset and Sampler
@@ -85,7 +85,7 @@ dataset:
   max_seq_len: 8192
 seed: null
 shuffle: True
-batch_size: 2
+batch_size: 1
 
 # Optimizer and Scheduler
 optimizer:
